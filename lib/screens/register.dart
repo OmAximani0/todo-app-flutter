@@ -32,6 +32,8 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
   @override
   Widget build(BuildContext context) {
 
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+
     void registerUser(String nameValue, String emailValue, String passwordValue) async {
       var jsonData = jsonEncode({
         "email": emailValue,
@@ -120,8 +122,8 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
           child: Stack(
             children: [
               Positioned(
-                top: 220,
-                left: 50,
+                top: mediaQueryData.size.height * 0.27,
+                left: mediaQueryData.size.width * 0.175,
                 child: Text(
                   'Register',
                   style: TextStyle(
@@ -131,10 +133,10 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
                 ),
               ),
               Positioned(
-                top: 275,
-                left: 52,
+                top: mediaQueryData.size.height * 0.36,
+                left: mediaQueryData.size.width * 0.17,
                 child: SizedBox(
-                  width: 280,
+                  width: mediaQueryData.size.width * 0.65,
                   child: TextFormField(
                     keyboardType: TextInputType.name,
                     decoration: landingFields.copyWith(
@@ -152,10 +154,10 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
                 ),
               ),
               Positioned(
-                top: 365,
-                left: 52,
+                top: mediaQueryData.size.height * 0.47,
+                left: mediaQueryData.size.width * 0.17,
                 child: SizedBox(
-                  width: 280,
+                  width: mediaQueryData.size.width * 0.65,
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: landingFields.copyWith(hintText: 'Email Id'),
@@ -172,10 +174,10 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
                 ),
               ),
               Positioned(
-                top: 455,
-                left: 52,
+                top: mediaQueryData.size.height * 0.58,
+                left: mediaQueryData.size.width * 0.17,
                 child: SizedBox(
-                  width: 280,
+                  width: mediaQueryData.size.width * 0.65,
                   child: TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     decoration: landingFields.copyWith(hintText: 'Password'),
@@ -193,8 +195,8 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
                 ),
               ),
               Positioned(
-                top: 548,
-                left: 120,
+                top: mediaQueryData.size.height * 0.68,
+                left: mediaQueryData.size.width * 0.305,
                 width: 140,
                 height: 50,
                 child: TextButton(
@@ -211,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> with ValidationMixin {
                 ),
               ),
               Positioned(
-                top: 615,
+                top: mediaQueryData.size.height * 0.82,
                 right: 70,
                 child: GestureDetector(
                   onTap: () => {

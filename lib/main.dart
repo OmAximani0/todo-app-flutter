@@ -13,6 +13,7 @@ const storage = FlutterSecureStorage();
 class MyApp extends StatelessWidget {
 
   Future<String> get jwtOrEmpty async {
+    Future.delayed(const Duration(seconds: 8));
     var jwt = await storage.read(key: "jwt");
     if(jwt == null) return "";
     return jwt;
@@ -28,8 +29,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: jwtOrEmpty,
+        initialData: null,
         builder: (context, snapshot) {
-          if(!snapshot.hasData) return const CircularProgressIndicator();
+          if(!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           if(snapshot.data != "") {
             String str = snapshot.data as String;
             var jwt = str.split(".");

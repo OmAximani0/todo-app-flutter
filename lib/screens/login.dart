@@ -34,6 +34,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
   @override
   Widget build(BuildContext context) {
 
+    MediaQueryData mediaQueryData = MediaQuery.of(context);
+
     void loginUser(String emailValue, String passwordValue) async {
       var jsonData = jsonEncode({
         "email": emailValue,
@@ -124,8 +126,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
           child: Stack(
             children: [
               Positioned(
-                top: 228,
-                left: 50,
+                top: mediaQueryData.size.height * 0.3,
+                left: mediaQueryData.size.width * 0.2,
                 child: Text(
                   'Login',
                   style: TextStyle(
@@ -135,10 +137,10 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
                 ),
               ),
               Positioned(
-                top: 320,
-                left: 52,
+                top: mediaQueryData.size.height * 0.42,
+                left: mediaQueryData.size.width * 0.17,
                 child: SizedBox(
-                  width: 280,
+                  width: mediaQueryData.size.width * 0.65,
                   child: TextFormField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: landingFields.copyWith(hintText: 'Email Id'),
@@ -155,10 +157,10 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
                 ),
               ),
               Positioned(
-                top: 405,
-                left: 52,
+                top: mediaQueryData.size.height * 0.55,
+                left: mediaQueryData.size.width * 0.17,
                 child: SizedBox(
-                  width: 280,
+                  width: mediaQueryData.size.width * 0.65,
                   child: TextFormField(
                     keyboardType: TextInputType.visiblePassword,
                     decoration: landingFields.copyWith(hintText: 'Password'),
@@ -176,8 +178,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
                 ),
               ),
               Positioned(
-                top: 510,
-                left: 120,
+                top: mediaQueryData.size.height * 0.67,
+                left: mediaQueryData.size.width * 0.305,
                 width: 140,
                 height: 50,
                 child: TextButton(
@@ -194,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin{
                 ),
               ),
               Positioned(
-                top: 590,
+                top: mediaQueryData.size.height * 0.82,
                 right: 70,
                 child: GestureDetector(
                   onTap: () => {

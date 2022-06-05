@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:todo_fmen/main.dart';
-import 'package:todo_fmen/utils/text_decorations.dart';
-
+import 'package:todo_fmen/widgets/add_todo.dart';
+import 'package:http/http.dart' as http;
 
 const String server = "fmen-todo-backend.herokuapp.com";
 const storage = FlutterSecureStorage();
@@ -71,117 +70,103 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      body: const HomePage(),
     );
   }
 }
 
-class AddTodoSheet extends StatefulWidget {
-  const AddTodoSheet({
-    Key? key,
-  }) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({ Key? key }) : super(key: key);
 
   @override
-  State<AddTodoSheet> createState() => _AddTodoSheetState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _AddTodoSheetState extends State<AddTodoSheet> {
+class _HomePageState extends State<HomePage> {
 
-  final _formKey = GlobalKey<FormState>();
+  late List todos = [];
 
-  String todo = "";
-  String desc = "";
+  void getTodos() async {
+    String? jwt = await storage.read(key: "jwt");
+
+    var serverResponse = await http.get(
+      Uri.http(server, "api/v1/todos/get"),
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Authorization': jwt as String
+      }
+    );
+
+    var data = jsonDecode(serverResponse.body);
+    setState(() {
+      todos = data["todos"] as List;
+    });
+  }
+
+  void deleteTodo(String id) async {
+    String? jwt = await storage.read(key: "jwt");
+
+    var serverResponse = await http.delete(
+      Uri.http(server, "api/v1/todos/delete/$id"),
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Authorization': jwt as String
+      }
+    );
+
+    var data = jsonDecode(serverResponse.body);
+  }
   
   @override
   Widget build(BuildContext context) {
-
-    void addTodo(String todoValue, String descValue) async {
-      var jsonData = jsonEncode({
-        "title": todoValue,
-        "description": descValue
-      });
-
-      print(jsonData);
-
-      String? jwt = await storage.read(key: "jwt");
-
-      var serverResponse = await http.post(
-        Uri.http(server, "api/v1/todos/add"),
-        body: jsonData,
-        headers: <String, String> {
-          'Content-Type': 'application/json',
-          'Authorization': jwt as String
-        }
-      );
-    }
-
-    void submit() {
-      if(_formKey.currentState!.validate()== true) {
-        _formKey.currentState!.reset();
-        addTodo(todo, desc);
-      }
-    }
-
-    return Container(
-      color: Colors.grey[200],
-      height: 500,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical:32.0, horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    "Add Your Todo Here",
+    getTodos();
+    
+    return todos.isEmpty ? const Center(
+      child: Text("Add your todo now!"),
+    ) : ListView.builder(
+      itemCount: todos.length,
+      itemBuilder: (context, index) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, right: 12, left: 12),
+            child: Card(
+              child: ListTile(
+                title: Text(todos[index]["title"]),
+                subtitle: Text(todos[index]["description"]),
+                trailing: TextButton(
+                  child: const Text(
+                    "Delete",
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16
+                      color: Colors.red,
                     ),
                   ),
+                  onPressed: () => {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(
+                        title: Text("Delete the todo"),
+                        content: Text("Are you sure to delete the todo"),
+                        actions: [
+                          TextButton(
+                            child: Text("Cancel"),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          TextButton(
+                            child: Text("Ok"),
+                            onPressed: () {
+                              deleteTodo(todos[index]["_id"]);
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      );
+                    },)
+                  }
                 ),
-                TextFormField(
-                  decoration: landingFields.copyWith(
-                    hintText: "Add your todo",
-                  ),
-                  validator: (inTodoValue) {
-                    if(inTodoValue!.isEmpty) {
-                      return "Todo is required";
-                    } else {
-                      todo = inTodoValue;
-                      return null;
-                    }
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 14.0),
-                  child: TextFormField(
-                    decoration: landingFields.copyWith(
-                      hintText: "Todo description",
-                    ),
-                    validator: (inDescValue) {
-                      if(inDescValue!.isEmpty) {
-                        return "Description is required";
-                      } else {
-                        desc = inDescValue;
-                        return null;
-                      }
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: ElevatedButton(
-                    child: const Text("Add Todo"),
-                    onPressed: () => submit(),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
