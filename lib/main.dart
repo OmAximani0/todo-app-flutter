@@ -8,6 +8,7 @@ void main() {
   runApp(const MyApp());
 }
 
+// Creating Storage for JWT
 const storage = FlutterSecureStorage();
 
 class MyApp extends StatelessWidget {
